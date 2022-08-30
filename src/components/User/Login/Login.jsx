@@ -1,68 +1,78 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import "./login.css";
-
-// import { loginUserData } from "../../../redux/actions/userAction";
+import Loading from "../../Accessory/Loading";
+import { loginUser } from "../../../redux/actions/userAction";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // dispatch(loginUserData(email, password));
-    console.log(email, password);
-    setEmail("");
-    setPassword("");
+    dispatch(loginUser({ email, password }));
+    setLoading(true);
     setTimeout(() => {
+      setEmail("");
+      setPassword("");
+      setLoading(false);
       navigate("/");
-    }, 1000);
+    }, 1500);
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("userId")) {
+      navigate("/");
+    }
+  }, [localStorage.getItem("userId"), navigate]);
+
   return (
-    <div
-      style={{ backgroundColor: "#fff", minHeight: "90vh", marginTop: "-24px" }}
-    >
-      <div className="comm-header">
-        <section className="login__section">
-          <div className="login__div">
-            <p className=" login__heading">Login</p>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <div>
-                <button type="submit">Login</button>
-              </div>
-              <div className="l__fot dis-flex">
-                <div>If you don't have an account, please</div>
-                <div
-                  className="navig__signup"
-                  onClick={() => {
-                    navigate("/signup");
-                  }}
-                >
-                  Register Here
+    <div style={{ backgroundColor: "#fff", marginTop: "24px" }}>
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className="comm-header">
+          <section className="login__section">
+            <div className="login__div">
+              <p className=" login__heading">Login</p>
+              <form onSubmit={handleSubmit}>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <div>
+                  <button type="submit">Login</button>
                 </div>
-              </div>
-            </form>
-          </div>
-        </section>
-      </div>
+                <div className="l__fot dis-flex">
+                  <div>If you don't have an account, please</div>
+                  <div
+                    className="navig__signup"
+                    onClick={() => {
+                      navigate("/signup");
+                    }}
+                  >
+                    Register Here
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
