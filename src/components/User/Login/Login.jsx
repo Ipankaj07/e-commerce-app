@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import "./login.css";
@@ -9,7 +9,9 @@ import { loginUser } from "../../../redux/actions/userAction";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const loading = useSelector((state) => state.user.isLoading);
+  const error = useSelector((state) => state.user.isError);
+  const isSuccess = useSelector((state) => state.user.isSuccess);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -17,20 +19,21 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(loginUser({ email, password }));
-    setLoading(true);
-    setTimeout(() => {
-      setEmail("");
-      setPassword("");
-      setLoading(false);
-      navigate("/");
-    }, 1500);
+    setEmail("");
+    setPassword("");
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/");
+    }
+  }, [isSuccess, navigate]);
 
   useEffect(() => {
     if (localStorage.getItem("userId")) {
       navigate("/");
     }
-  }, [localStorage.getItem("userId"), navigate]);
+  }, [navigate]);
 
   return (
     <div style={{ backgroundColor: "#fff", marginTop: "24px" }}>
@@ -41,6 +44,11 @@ function Login() {
           <section className="login__section">
             <div className="login__div">
               <p className=" login__heading">Login</p>
+              {error && (
+                <div className="login__error">
+                  Something Went Wrong Try Again
+                </div>
+              )}
               <form onSubmit={handleSubmit}>
                 <input
                   type="email"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import Loading from "../../Accessory/Loading";
@@ -11,8 +11,9 @@ function SignUp() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const loading = useSelector((state) => state.user.isLoading);
+  const error = useSelector((state) => state.user.isError);
+  const isSuccess = useSelector((state) => state.user.isSuccess);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,23 +21,19 @@ function SignUp() {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(signupUser({ firstName, lastName, email, password }));
-    setLoading(true);
-    setTimeout(() => {
-      setFirstName("");
-      setLastName("");
-      setEmail("");
-      setPassword("");
-      setError("");
-      setLoading(false);
-      navigate("/");
-    }, 1500);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/");
+    }
+  }, [isSuccess, navigate]);
 
   useEffect(() => {
     if (localStorage.getItem("userId")) {
       navigate("/");
     }
-  }, [localStorage.getItem("userId"), navigate]);
+  }, [navigate]);
 
   return (
     <div style={{ backgroundColor: "#fff", marginTop: "24px" }}>
@@ -44,10 +41,10 @@ function SignUp() {
         <Loading />
       ) : (
         <div className="comm-header">
-          <div>{error}</div>
           <section className="login__section">
             <div className="login__div">
               <p className=" login__heading">Register</p>
+              {error && <div className="login__error">{error}</div>}
               <form onSubmit={handleSubmit}>
                 <input
                   type="text"
