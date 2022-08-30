@@ -1,0 +1,3 @@
+const SIGNUP = "SIGNUP";
+const LOGIN_USER = "LOGIN_USER";
+export { SIGNUP, LOGIN_USER };
