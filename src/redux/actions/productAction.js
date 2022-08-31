@@ -8,7 +8,7 @@ import {
 
 import axios from "axios";
 
-const uri = "https://firstcry-dbs.herokuapp.com/";
+const uri = `${process.env.REACT_APP_BASE_URL}`;
 
 const getProductLoading = () => {
   return {
@@ -30,17 +30,17 @@ const getProductFailure = (error) => {
   };
 };
 
-const addCart = (productId, userId) => {
+const addCart = (product) => {
   return {
     type: ADD_CART,
-    payload: { productId, userId },
+    payload: product,
   };
 };
 
-const deleteCart = (productId, userId) => {
+const deleteCart = (product) => {
   return {
     type: DELETE_CART,
-    payload: { productId, userId },
+    payload: product,
   };
 };
 
@@ -48,9 +48,9 @@ export const getProduct = () => {
   return (dispatch) => {
     dispatch(getProductLoading());
     axios
-      .get(uri)
+      .get(uri + "/products")
       .then((res) => {
-        dispatch(getProductSuccess(res.data));
+        dispatch(getProductSuccess(res.data.product));
       })
       .catch((err) => {
         dispatch(getProductFailure(err));
@@ -58,39 +58,14 @@ export const getProduct = () => {
   };
 };
 
-/* 
-POST /user/cart/add
-productId,
-userId
-*/
-export const addCartProduct = (productId, userId) => {
+export const addCartProduct = (productId) => {
   return (dispatch) => {
-    axios
-      .post(uri + "user/cart/add", { productId, userId })
-      .then((res) => {
-        dispatch(addCart(res.data));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    dispatch(addCart(productId));
   };
 };
 
-/* 
-PATCH /user/cart/remove
-productId,
-userId
-*/
-
-export const deleteCartProduct = (productId, userId) => {
+export const deleteCartProduct = (productId) => {
   return (dispatch) => {
-    axios
-      .patch(uri + "users/cart/remove", { productId, userId })
-      .then((res) => {
-        dispatch(deleteCart(res.data));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    dispatch(deleteCart(productId));
   };
 };

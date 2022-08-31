@@ -1,29 +1,19 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
 import "./productList.css";
 import { FaCartPlus } from "react-icons/fa";
 
-// import { Link } from "react-router-dom";
 import Loading from "../Accessory/Loading";
+import { getProduct, addCartProduct } from "../../redux/actions/productAction";
 
 function ProductList() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [products, setProducts] = useState([]);
-  const uri = "https://firstcry-dbs.herokuapp.com/products";
-
-  const getData = async () => {
-    try {
-      const response = await axios.get(uri);
-      setProducts(response.data.product);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    getData();
-  }, []);
+    dispatch(getProduct());
+  }, [dispatch]);
+
+  const { isLoading, product } = useSelector((state) => state.product);
+  const userId = JSON.parse(localStorage.getItem("userId"));
 
   return (
     <>
@@ -36,7 +26,7 @@ function ProductList() {
           <div className="productLists">
             <div className="product__container">
               <div className="product__view">
-                {products.map((item) => (
+                {product.map((item) => (
                   <div key={item._id}>
                     <div className="product__div">
                       <div className="product__img">
@@ -65,9 +55,9 @@ function ProductList() {
                       <div className="prodD__btn">
                         <div
                           className="btn__add-cart"
-                          // onClick={() =>
-                          //   dispatch(addProductTocartData(id, userId))
-                          // }
+                          onClick={() =>
+                            dispatch(addCartProduct(item._id, userId))
+                          }
                         >
                           <FaCartPlus className="cart__logo" />
                           ADD TO CART

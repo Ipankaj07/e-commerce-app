@@ -6,12 +6,12 @@ import {
   DELETE_CART,
 } from "../../constant/productActionType";
 
-
 const initialState = {
   product: [],
   isLoading: false,
   isError: false,
   isSuccess: false,
+  cart: [],
 };
 
 const productReducer = (state = initialState, action) => {
@@ -41,22 +41,16 @@ const productReducer = (state = initialState, action) => {
     case ADD_CART:
       return {
         ...state,
-        product: action.payload,
-        isLoading: false,
-        isError: false,
-        isSuccess: true,
+        cart: [...state.cart, action.payload],
       };
     case DELETE_CART:
       return {
         ...state,
-        product: action.payload,
-        isLoading: false,
-        isError: false,
-        isSuccess: true,
+        cart: state.cart.filter((item) => item._id !== action.payload._id),
       };
     default:
       return state;
   }
-}
+};
 
 export default productReducer;
