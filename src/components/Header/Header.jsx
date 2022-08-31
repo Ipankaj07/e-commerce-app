@@ -37,7 +37,7 @@ function Header() {
                 <ImCart size={25} />
               </div>
             </Link>
-            <span></span>
+            <span>E-Commerce</span>
           </div>
           <div className="navbar__links">
             <Link to="/" className="navbar__link">
